@@ -1,14 +1,38 @@
 import streamlit as st
 import pandas as pd
 import os
+import base64
 
-# Sample data for hairstyles
-hairstyles = [
-    "Braids", "Cornrows", "Box Braids", "Twists", "Weave", "Afro", "Locs", "Curls"
-]
+# Function to convert images to base64
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode("utf-8")
+
+# Sample data for hairstyles and their corresponding image filenames
+hairstyles = {
+    "Braids": "braid.jpg",
+    "Cornrows": "cornrows.jpg",
+    "Box Braids": "box_braids.jpg",
+    "Twists": "twists.jpg",
+    "Weave": "weave.jpg",
+    "Afro": "afro.jpg",
+    "Locs": "locs.jpg",
+    "Curls": "curl.jpg"
+}
 
 # Title of the app
 st.title("HairByFlakky Salon Booking App")
+
+# Display hairstyle images horizontally
+st.header("Our Hairstyles")
+image_folder = "images"
+
+cols = st.columns(len(hairstyles))
+for idx, (style, img) in enumerate(hairstyles.items()):
+    img_path = os.path.join(image_folder, img)
+    img_base64 = get_base64_image(img_path)
+    cols[idx].image(f"data:image/jpeg;base64,{img_base64}", use_column_width=True)
+    cols[idx].caption(style)
 
 # Form for customer details
 st.header("Book Your Favorite Hairstyle")
@@ -18,7 +42,7 @@ with st.form(key='booking_form'):
     customer_name = st.text_input("Customer Name")
     phone_number = st.text_input("Phone Number")
     address = st.text_input("Address")
-    hairstyle = st.selectbox("Choose Hairstyle", hairstyles)
+    hairstyle = st.selectbox("Choose Hairstyle", list(hairstyles.keys()))
     
     # Submit button
     submit_button = st.form_submit_button(label='Book Appointment')
